@@ -1,13 +1,40 @@
-// if you checked "fancy-settings" in extensionizr.com, uncomment this lines
+chrome.tabs.query({}, function (tabs) {
+	for (var i = 0; i < tabs.length; i++) {
+		parseTabs(tabs[i].url, tabs[i].id);
+	}
+});
 
-// var settings = new Store("settings", {
-//     "sample_setting": "This is how you use Store.js to remember values"
-// });
+chrome.tabs.onCreated.addListener(function (tabs) {
+	parseTabs(tabs.url, tabs.id);
+});
 
+function parseTabs(url, id) {
+	chrome.storage.sync.get(function (resp) {
+		var isMatch = false;
+		for (var key in resp) {
+			if (resp[key].type === '1') {
+				if (url.indexOf(resp[key].website) > -1) {
+					if (isMatch === false) chrome.tabs.remove(id);
 
-//example of using a message handler from the inject scripts
-chrome.extension.onMessage.addListener(
-  function(request, sender, sendResponse) {
-  	chrome.pageAction.show(sender.tab.id);
-    sendResponse();
-  });
+					isMatch = true;
+				}
+			}
+			if (resp[key].type === '2') {
+				if (url === resp[key].website) {
+					if (isMatch === false) chrome.tabs.remove(id);
+
+					isMatch = true;
+				}
+			}
+			if (resp[key].type === '3') {
+				console.log(isMatch);
+				var re = new RegExp(resp[key].website);
+				if (re.test(url)) {
+					if (isMatch === false) chrome.tabs.remove(id);
+
+					isMatch = true;
+				}
+			}
+		}
+	});
+}

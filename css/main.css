@@ -1,4 +1,4 @@
-.body { width : 600px; padding : 10px; min-height : 300px; }
+.body { width : 500px; padding : 10px; min-height : 300px; }
 .body select, .body input { height : 2.7em; }
 .button-success { background : rgb(28, 184, 65); }
 .button-error { background : rgb(202, 60, 60); }
